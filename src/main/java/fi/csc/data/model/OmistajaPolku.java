@@ -7,6 +7,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class OmistajaPolku {
-    String omistaja; //ProjectArea, Project, Bucket
-    String polku; //Path, DownloadURL, EtsinPID,
+    public String omistaja; //ProjectArea, Project, Bucket
+    public String polku; //Path, DownloadURL, EtsinPID,
 }
