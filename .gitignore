@@ -41,3 +41,4 @@ nb-configuration.xml
 
 # Local environment
 .env
+/.idea/

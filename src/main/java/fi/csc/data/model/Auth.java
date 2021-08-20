@@ -1,10 +1,12 @@
 package fi.csc.data.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Auth {
     String username;
-    String appToken;
     String accessKey;
     String secretKey;
     String projectID;
-    String authToken; // voisiko olla vaan token, se on vaan merkkijono
+    String token; // sekä app että auth
 }
