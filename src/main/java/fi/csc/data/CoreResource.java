@@ -5,12 +5,16 @@ import fi.csc.data.model.Palvelu;
 //import io.smallrye.config.ConfigMapping;
 //import io.smallrye.config.WithName;
 
+import javax.inject.Inject;
+import javax.jms.ConnectionFactory;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
+import javax.jms.JMSContext;
+import javax.jms.Session;
 
 import static fi.csc.data.model.Palvelu.PalveluID.ALLAS;
 import static fi.csc.data.model.Palvelu.PalveluID.ALLASPUBLIC;
@@ -18,17 +22,25 @@ import static fi.csc.data.model.Palvelu.PalveluID.FAIRDATACLOSED;
 import static fi.csc.data.model.Palvelu.PalveluID.FAIRDATAOPEN;
 import static fi.csc.data.model.Palvelu.PalveluID.IDASTAGING;
 
+
 @Path("/v1/copy")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class CoreResource {
     private final static int OK = 200;
+    public final static String QUEQUENAME = "copyrequest";
+
+    @Inject
+    ConnectionFactory connectionFactory;
 
     @POST
     public Response copy( CopyRequest ft) {
         int code = validate(ft);
         if (OK == code) {
-            return Response.ok("Vain toteutus puuttuu").build();
+            try (JMSContext context = connectionFactory.createContext(Session.AUTO_ACKNOWLEDGE)) {
+                context.createProducer().send(context.createQueue( QUEQUENAME ), ft);
+            }
+            return Response.ok("Pyytö lähetetty").build();
         } else
             return Response.status(code).build();
     }
