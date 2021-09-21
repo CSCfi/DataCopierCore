@@ -2,6 +2,7 @@ package fi.csc.data;
 
 import fi.csc.data.model.CopyRequest;
 import fi.csc.data.model.Palvelu;
+import io.agroal.api.AgroalDataSource;
 //import io.smallrye.config.ConfigMapping;
 //import io.smallrye.config.WithName;
 
@@ -15,6 +16,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 import javax.jms.JMSContext;
 import javax.jms.Session;
+
+import java.sql.Connection;
+import java.sql.SQLException;
 
 import static fi.csc.data.model.Palvelu.PalveluID.ALLAS;
 import static fi.csc.data.model.Palvelu.PalveluID.ALLASPUBLIC;
@@ -31,16 +35,23 @@ public class CoreResource {
     public final static String QUEQUENAME = "copyrequest";
 
     @Inject
-    ConnectionFactory connectionFactory;
+    AgroalDataSource defaultDataSource;
 
     @POST
     public Response copy( CopyRequest ft) {
         int code = validate(ft);
         if (OK == code) {
-            try (JMSContext context = connectionFactory.createContext(Session.AUTO_ACKNOWLEDGE)) {
-                context.createProducer().send(context.createQueue( QUEQUENAME ), ft);
+            try  {
+                Connection connection = defaultDataSource.getConnection();
+                if (ft.tallenna(connection))
+                    return Response.ok("Pyyntö lähetetty").build();
+                else
+                    return Response.status(500, "Pyynnön tallennus epäonnistui").build();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+                return Response.status(500, "Tietokantayhteysongelma").build();
             }
-            return Response.ok("Pyytö lähetetty").build();
+
         } else
             return Response.status(code).build();
     }

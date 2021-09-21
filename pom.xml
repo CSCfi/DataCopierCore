@@ -26,19 +26,12 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
-      <dependency>
-        <groupId>${quarkus.platform.group-id}</groupId>
-        <artifactId>quarkus-qpid-jms-bom</artifactId>
-        <version>${quarkus.platform.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
     </dependencies>
   </dependencyManagement>
   <dependencies>
      <dependency>
-      <groupId>org.amqphub.quarkus</groupId>
-      <artifactId>quarkus-qpid-jms</artifactId>
+       <groupId>io.quarkus</groupId>
+       <artifactId>quarkus-jdbc-mariadb</artifactId>
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
