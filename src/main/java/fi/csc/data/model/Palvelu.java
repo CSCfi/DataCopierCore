@@ -58,23 +58,32 @@ public class Palvelu implements Serializable {
         if (null != auth)
             auth.persistAndFlush();
         try {
-            PreparedStatement stmnt = con.prepareStatement(INSERT);
+            PreparedStatement stmnt = con.prepareStatement(INSERT, PreparedStatement.RETURN_GENERATED_KEYS);
             stmnt.setInt(1, type.getNo());
             if (null != protocol)
                 stmnt.setInt(2, protocol.getNo());
+            else
+                stmnt.setNull(2,java.sql.Types.NULL);
             if (null != auth)
                 stmnt.setInt(3, auth.authid);
+            else
+                stmnt.setNull(3, java.sql.Types.NULL);
             if (null != param.omistaja)
                 stmnt.setString(4, param.omistaja);
+            else
+                stmnt.setNull(4, java.sql.Types.NULL);
             stmnt.setString(5, param.polku);
             int tulos = stmnt.executeUpdate();
             try (ResultSet rs = stmnt.getGeneratedKeys()) {
                 if (rs.next()) {
-                    return rs.getInt(1);
+                    int caseid = rs.getInt(1);
+                    stmnt.close();
+                    return caseid;
                 }
             } catch (SQLException s) {
                 s.printStackTrace();
             }
+            stmnt.close();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }

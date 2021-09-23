@@ -7,15 +7,14 @@ import io.agroal.api.AgroalDataSource;
 //import io.smallrye.config.WithName;
 
 import javax.inject.Inject;
-import javax.jms.ConnectionFactory;
+import javax.transaction.Transactional;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
-import javax.jms.JMSContext;
-import javax.jms.Session;
+
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -37,16 +36,21 @@ public class CoreResource {
     @Inject
     AgroalDataSource defaultDataSource;
 
+    @Transactional
     @POST
     public Response copy( CopyRequest ft) {
         int code = validate(ft);
         if (OK == code) {
             try  {
                 Connection connection = defaultDataSource.getConnection();
-                if (ft.tallenna(connection))
+                if (ft.tallenna(connection)) {
+                    connection.close();
                     return Response.ok("Pyyntö lähetetty").build();
-                else
+                }
+                else {
+                    connection.close();
                     return Response.status(500, "Pyynnön tallennus epäonnistui").build();
+                }
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
                 return Response.status(500, "Tietokantayhteysongelma").build();
