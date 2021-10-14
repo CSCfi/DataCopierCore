@@ -3,6 +3,8 @@ package fi.csc.data;
 import fi.csc.data.model.CopyRequest;
 import fi.csc.data.model.Palvelu;
 import io.agroal.api.AgroalDataSource;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.jboss.resteasy.annotations.jaxrs.HeaderParam;
 //import io.smallrye.config.ConfigMapping;
 //import io.smallrye.config.WithName;
 
@@ -31,14 +33,22 @@ import static fi.csc.data.model.Palvelu.PalveluID.IDASTAGING;
 @Consumes(MediaType.APPLICATION_JSON)
 public class CoreResource {
     private final static int OK = 200;
-    public final static String QUEQUENAME = "copyrequest";
+    public final static int AD = 403; //Forbidden
+    private final static String KEYERROR = "API key was INVALID";
+    public final static Response ACCESSDENIED = Response.status(AD, KEYERROR).build();
+    //public final static String QUEQUENAME = "copyrequest";
+
+    @ConfigProperty(name = "dc.apikey")
+    String apikey;
 
     @Inject
     AgroalDataSource defaultDataSource;
 
     @Transactional
     @POST
-    public Response copy( CopyRequest ft) {
+    public Response copy( CopyRequest ft, @HeaderParam("apikey") String apikeytocheck) {
+        if (!apikey.equals(apikeytocheck))
+            return ACCESSDENIED;
         int code = validate(ft);
         if (OK == code) {
             try  {
