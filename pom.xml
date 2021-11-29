@@ -14,7 +14,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
     <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-    <quarkus.platform.version>2.3.0.Final</quarkus.platform.version>
+    <quarkus.platform.version>2.5.0.Final</quarkus.platform.version>
     <surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
   </properties>
 
@@ -46,10 +46,19 @@
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-hibernate-orm-rest-data-panache</artifactId>
     </dependency>
+      <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-resteasy</artifactId>
+    </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-openshift</artifactId>
     </dependency>
+      <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-openshift-client</artifactId>
+    </dependency>
+
     <!--dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-container-image-docker</artifactId>
