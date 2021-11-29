@@ -9,6 +9,8 @@ import org.jboss.logging.Logger;
 
 /**
  * https://wiki.csc.fi/SDS/DatasetCopierIDAAllasAPI
+ *
+ * Tällä luokalla on service DataCopierEngine-ohjelmassa
  */
 public class CopyRequest implements Serializable  {
 
@@ -19,6 +21,7 @@ public class CopyRequest implements Serializable  {
     public String requester;
     public Palvelu source;
     public Palvelu destination;
+    public int status;
 
     public boolean tallenna(Connection con) {
         int s = source.tallenna(con);

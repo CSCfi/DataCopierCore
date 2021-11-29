@@ -4,13 +4,12 @@ import fi.csc.data.model.CopyRequest;
 import fi.csc.data.model.Palvelu;
 import io.agroal.api.AgroalDataSource;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.jboss.resteasy.annotations.jaxrs.HeaderParam;
-//import io.smallrye.config.ConfigMapping;
-//import io.smallrye.config.WithName;
+//import org.jboss.resteasy.annotations.jaxrs.HeaderParam;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
