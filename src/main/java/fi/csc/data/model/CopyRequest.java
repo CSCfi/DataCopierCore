@@ -5,19 +5,32 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.ResultSet;
+
+import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.jboss.logging.Logger;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 /**
  * https://wiki.csc.fi/SDS/DatasetCopierIDAAllasAPI
  *
  * Tällä luokalla on service DataCopierEngine-ohjelmassa
  */
-public class CopyRequest implements Serializable  {
+@RegisterForReflection
+@Entity
+public class CopyRequest extends PanacheEntityBase {
 
     private static final String INSERT = "INSERT INTO request (requester, source, destination) VALUES (?, ?, ?)";
     private static final Logger LOG = Logger.getLogger(CopyRequest.class);
     private static final long serialVersionUID = 56630571L;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    public int copyid;
     public String requester;
     public Palvelu source;
     public Palvelu destination;
