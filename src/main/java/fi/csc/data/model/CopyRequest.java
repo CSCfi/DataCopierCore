@@ -22,15 +22,15 @@ import javax.persistence.Id;
  */
 @RegisterForReflection
 @Entity
-public class CopyRequest extends PanacheEntityBase {
+public class CopyRequest /*extends PanacheEntityBase*/ {
 
     private static final String INSERT = "INSERT INTO request (requester, source, destination) VALUES (?, ?, ?)";
     private static final Logger LOG = Logger.getLogger(CopyRequest.class);
     private static final long serialVersionUID = 56630571L;
 
-    @Id
+    /*@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public int copyid;
+    public int copyid;*/
     public String requester;
     public Palvelu source;
     public Palvelu destination;
