@@ -1,27 +1,25 @@
 package fi.csc.data.model;
 
-import java.io.Serializable;
+//import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.ResultSet;
+//import java.sql.ResultSet;
 
-import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
+//import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.jboss.logging.Logger;
 
-import javax.persistence.Entity;
+/*import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-
+*/
 /**
  * https://wiki.csc.fi/SDS/DatasetCopierIDAAllasAPI
- *
- * Tällä luokalla on service DataCopierEngine-ohjelmassa
  */
 @RegisterForReflection
-@Entity
+//@Entity
 public class CopyRequest /*extends PanacheEntityBase*/ {
 
     private static final String INSERT = "INSERT INTO request (requester, source, destination) VALUES (?, ?, ?)";
