@@ -4,6 +4,7 @@ import fi.csc.data.model.CopyRequest;
 import fi.csc.data.model.Palvelu;
 import io.agroal.api.AgroalDataSource;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.jboss.logging.Logger;
 //import org.jboss.resteasy.annotations.jaxrs.HeaderParam;
 
 import javax.inject.Inject;
@@ -42,6 +43,9 @@ public class CoreResource {
 
     @Inject
     AgroalDataSource defaultDataSource;
+
+    @Inject
+    Logger log;
 
     @Transactional
     @POST
@@ -87,8 +91,10 @@ public class CoreResource {
 
     private int validatePalvelu(Palvelu service, boolean source) {
         if (null == service.auth)
-            if (!source && (service.type.equals(ALLASPUBLIC) || service.type.equals(FAIRDATAOPEN)))
+            if (!source && !((service.type.equals(ALLASPUBLIC) || service.type.equals(FAIRDATAOPEN)))) {
+                log.error("Mandatory Auth object missing");
                 return 403;
+            }
         if (null == service.param)
             return 400;
         if (null == service.param.polku)
