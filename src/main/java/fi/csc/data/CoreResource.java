@@ -36,7 +36,7 @@ public class CoreResource {
     public final static int AD = 403; //Forbidden
     private final static String KEYERROR = "API key was INVALID";
     public final static Response ACCESSDENIED = Response.status(AD, KEYERROR).build();
-    //public final static String QUEQUENAME = "copyrequest";
+
 
     @ConfigProperty(name = "dc.apikey")
     String apikey;
@@ -49,24 +49,26 @@ public class CoreResource {
 
     @Transactional
     @POST
-    public Response copy( CopyRequest ft, @HeaderParam("apikey") String apikeytocheck) {
-        if (!apikey.equals(apikeytocheck))
+    public Response copy( CopyRequest ft, @HeaderParam("Apikey") String apikeytocheck) {
+        if (!apikey.equals(apikeytocheck)) {
+            log.error("Invalid Apikey: "+ apikeytocheck);
             return ACCESSDENIED;
+        }
         int code = validate(ft);
         if (OK == code) {
             try  {
                 Connection connection = defaultDataSource.getConnection();
                 if (ft.tallenna(connection)) {
                     connection.close();
-                    return Response.ok("Pyyntö lähetetty").build();
+                    return Response.ok("Pyyntö lähetetty\n").build();
                 }
                 else {
                     connection.close();
-                    return Response.status(500, "Pyynnön tallennus epäonnistui").build();
+                    return Response.status(500, "Pyynnön tallennus epäonnistui\n").build();
                 }
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
-                return Response.status(500, "Tietokantayhteysongelma").build();
+                return Response.status(500, "Tietokantayhteysongelma\n").build();
             }
 
         } else

@@ -19,7 +19,6 @@ import javax.persistence.Id;
  * https://wiki.csc.fi/SDS/DatasetCopierIDAAllasAPI
  */
 @RegisterForReflection
-//@Entity
 public class CopyRequest /*extends PanacheEntityBase*/ {
 
     private static final String INSERT = "INSERT INTO request (requester, source, destination) VALUES (?, ?, ?)";

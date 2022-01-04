@@ -55,8 +55,11 @@ public class Palvelu implements Serializable {
     public OmistajaPolku param;
 
     public int tallenna(Connection con) {
+        int authid = 0;
         if (null != auth)
-            auth.persistAndFlush();
+            authid = auth.tallenna(con);
+        else
+            System.err.println("Auth was null");
         try {
             PreparedStatement stmnt = con.prepareStatement(INSERT, PreparedStatement.RETURN_GENERATED_KEYS);
             stmnt.setInt(1, type.getNo());
@@ -65,7 +68,7 @@ public class Palvelu implements Serializable {
             else
                 stmnt.setNull(2,java.sql.Types.NULL);
             if (null != auth)
-                stmnt.setInt(3, auth.authid);
+                stmnt.setInt(3, authid);
             else
                 stmnt.setNull(3, java.sql.Types.NULL);
             if (null != param.omistaja)
