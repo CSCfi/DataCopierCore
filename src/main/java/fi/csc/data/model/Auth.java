@@ -11,7 +11,7 @@ import java.sql.SQLException;
 
 /*@Entity
 @Table(name = "auth")*/
-@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonIgnoreProperties
 public class Auth  /*extends PanacheEntityBase*/  implements Serializable{
 
     private static final long serialVersionUID = 56630575L;
@@ -21,11 +21,11 @@ public class Auth  /*extends PanacheEntityBase*/  implements Serializable{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     int authid;*/
-    String username;
-    String accessKey;
-    String secretKey;
-    String projectID;
-    String token; // sekä app että auth
+    public String username;
+    public String accessKey;
+    public String secretKey;
+    public String projectID;
+    public String token; // sekä app että auth
 
     public int tallenna(Connection con) {
         try {
