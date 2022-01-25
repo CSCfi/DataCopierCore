@@ -3,6 +3,9 @@ package fi.csc.data;
 import fi.csc.data.model.CopyRequest;
 import fi.csc.data.model.Palvelu;
 import io.agroal.api.AgroalDataSource;
+import io.fabric8.kubernetes.api.model.Pod;
+import io.fabric8.kubernetes.api.model.PodSpec;
+import io.fabric8.openshift.client.OpenShiftClient;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 //import org.jboss.resteasy.annotations.jaxrs.HeaderParam;
@@ -20,6 +23,7 @@ import javax.ws.rs.core.Response;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
 import static fi.csc.data.model.Palvelu.PalveluID.ALLAS;
 import static fi.csc.data.model.Palvelu.PalveluID.ALLASPUBLIC;
@@ -42,6 +46,9 @@ public class CoreResource {
     String apikey;
 
     @Inject
+    private OpenShiftClient openshiftClient;
+
+    @Inject
     AgroalDataSource defaultDataSource;
 
     @Inject
@@ -54,6 +61,10 @@ public class CoreResource {
             log.error("Invalid Apikey: "+ apikeytocheck);
             return ACCESSDENIED;
         }
+        List<Pod> pods = openshiftClient.pods().list().getItems();
+        Pod eka = pods.get(0);
+        PodSpec ps = eka.getSpec();
+        log.info(ps.getHostname() + " pod is " + ps.getNodeName());
         int code = validate(ft);
         if (OK == code) {
             try  {

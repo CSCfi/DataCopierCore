@@ -14,18 +14,9 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
     <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-    <quarkus.platform.version>2.6.1.Final</quarkus.platform.version>
+    <quarkus.platform.version>2.6.3.Final</quarkus.platform.version>
     <surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
   </properties>
-
-  <pluginRepositories>
-        <pluginRepository>
-            <id>jfrog-plugins-release</id>
-            <name>plugins-release</name>
-            <url>https://oss.jfrog.org/artifactory/plugins-release</url>
-        </pluginRepository>
-    </pluginRepositories>
-
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -38,19 +29,19 @@
     </dependencies>
   </dependencyManagement>
   <dependencies>
-     <dependency>
-       <groupId>io.quarkus</groupId>
-       <artifactId>quarkus-jdbc-mariadb</artifactId>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-jdbc-mariadb</artifactId>
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-hibernate-orm-rest-data-panache</artifactId>
     </dependency>
-       <dependency>
+    <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-agroal</artifactId>
     </dependency>
-      <dependency>
+    <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-resteasy</artifactId>
     </dependency>
@@ -58,24 +49,15 @@
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-openshift</artifactId>
     </dependency>
-      <dependency>
+    <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-openshift-client</artifactId>
     </dependency>
-
-    <!--dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-container-image-docker</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-container-image-s2i</artifactId>
-    </dependency-->
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-config-yaml</artifactId>
     </dependency>
-      <dependency>
+    <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-smallrye-openapi</artifactId>
     </dependency>
@@ -97,6 +79,13 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>jfrog-plugins-release</id>
+      <name>plugins-release</name>
+      <url>https://oss.jfrog.org/artifactory/plugins-release</url>
+    </pluginRepository>
+  </pluginRepositories>
   <build>
     <plugins>
       <plugin>
@@ -131,39 +120,39 @@
           </systemPropertyVariables>
         </configuration>
       </plugin>
- <plugin>
-            <groupId>org.jfrog.buildinfo</groupId>
-            <artifactId>artifactory-maven-plugin</artifactId>
-            <version>3.2.3</version>
-            <inherited>false</inherited>
-            <executions>
-                <execution>
-                    <id>build-info</id>
-                    <goals>
-                        <goal>publish</goal>
-                    </goals>
-                    <configuration>
-                        <deployProperties>
-                            <groupId>${project.groupId}</groupId>
-                            <artifactId>${project.artifactId}</artifactId>
-                            <version>${project.version}</version>
-                        </deployProperties>
-                        <publisher>
-                            <contextUrl>https://artifactory.ci.csc.fi</contextUrl>
-                            <username>dccore-build</username>
-                            <password>${password}</password>
-                            <repoKey>dccore-quarkus-maven-local</repoKey>
-                            <snapshotRepoKey>libs-snapshot-local</snapshotRepoKey>
-                        </publisher>
-                       <artifactory>
-                                <includeEnvVars>true</includeEnvVars>
-                                <envVarsExcludePatterns>*password*,*secret*,*key*,*token*,*passphrase*</envVarsExcludePatterns>
-                                <timeoutSec>60</timeoutSec>
-                       </artifactory>
-                    </configuration>
-                </execution>
-            </executions>
-        </plugin>
+      <plugin>
+        <groupId>org.jfrog.buildinfo</groupId>
+        <artifactId>artifactory-maven-plugin</artifactId>
+        <version>3.2.3</version>
+        <executions>
+          <execution>
+            <id>build-info</id>
+            <goals>
+              <goal>publish</goal>
+            </goals>
+            <configuration>
+              <deployProperties>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>${project.artifactId}</artifactId>
+                <version>${project.version}</version>
+              </deployProperties>
+              <publisher>
+                <contextUrl>https://artifactory.ci.csc.fi</contextUrl>
+                <username>dccore-build</username>
+                <password>${password}</password>
+                <repoKey>dccore-quarkus-maven-local</repoKey>
+                <snapshotRepoKey>libs-snapshot-local</snapshotRepoKey>
+              </publisher>
+              <artifactory>
+                <includeEnvVars>true</includeEnvVars>
+                <envVarsExcludePatterns>*password*,*secret*,*key*,*token*,*passphrase*</envVarsExcludePatterns>
+                <timeoutSec>60</timeoutSec>
+              </artifactory>
+            </configuration>
+          </execution>
+        </executions>
+        <inherited>false</inherited>
+      </plugin>
     </plugins>
   </build>
   <profiles>
