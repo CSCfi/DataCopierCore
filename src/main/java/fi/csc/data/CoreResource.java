@@ -3,8 +3,11 @@ package fi.csc.data;
 import fi.csc.data.model.CopyRequest;
 import fi.csc.data.model.Palvelu;
 import io.agroal.api.AgroalDataSource;
+import io.fabric8.kubernetes.api.model.EnvVarBuilder;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.PodSpec;
+import io.fabric8.kubernetes.api.model.apps.Deployment;
+import io.fabric8.kubernetes.api.model.apps.DeploymentBuilder;
 import io.fabric8.openshift.client.OpenShiftClient;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
@@ -27,6 +30,7 @@ import java.util.List;
 
 import static fi.csc.data.model.Palvelu.PalveluID.ALLAS;
 import static fi.csc.data.model.Palvelu.PalveluID.ALLASPUBLIC;
+import static fi.csc.data.model.Palvelu.PalveluID.B2DROP;
 import static fi.csc.data.model.Palvelu.PalveluID.FAIRDATACLOSED;
 import static fi.csc.data.model.Palvelu.PalveluID.FAIRDATAOPEN;
 import static fi.csc.data.model.Palvelu.PalveluID.IDASTAGING;
@@ -36,6 +40,10 @@ import static fi.csc.data.model.Palvelu.PalveluID.IDASTAGING;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class CoreResource {
+
+    private final static String PODNAME = "dcEngine"; //Should have numbering extra?
+    private final static String APP = "app"; //Does content matter?
+    private final static String SECRETSNAME = "datacopiersecrets";
     private final static int OK = 200;
     public final static int AD = 403; //Forbidden
     private final static String KEYERROR = "API key was INVALID";
@@ -61,16 +69,59 @@ public class CoreResource {
             log.error("Invalid Apikey: "+ apikeytocheck);
             return ACCESSDENIED;
         }
-        List<Pod> pods = openshiftClient.pods().list().getItems();
-        Pod eka = pods.get(0);
-        PodSpec ps = eka.getSpec();
-        log.info(ps.getHostname() + " pod is " + ps.getNodeName());
+
+
         int code = validate(ft);
         if (OK == code) {
             try  {
                 Connection connection = defaultDataSource.getConnection();
                 if (ft.tallenna(connection)) {
                     connection.close();
+                    //try {
+                        Deployment deployment = new DeploymentBuilder().withNewMetadata()
+                                .withName("datacopierEngine-deployment")
+                                .addToLabels(APP, PODNAME).endMetadata()
+                                .withNewSpec()
+                                .withReplicas(1)
+                                .withNewSelector()
+                                .addToMatchLabels(APP, PODNAME)
+                                .endSelector()
+                                .withNewTemplate()
+                                .withNewMetadata()
+                                .addToLabels(APP, PODNAME)
+                                .endMetadata()
+                                .withNewSpec()
+                                .addNewContainer()
+                                .withName(PODNAME)
+                                .withImage("datacopier/engine")
+                                .withEnv(new EnvVarBuilder()
+                                                .withName("READ_PASSWORD")
+                                                .withNewValueFrom()
+                                                .withNewSecretKeyRef()
+                                                .withName(SECRETSNAME)
+                                                .withKey("READ_PASSWORD")
+                                                .endSecretKeyRef()
+                                                .endValueFrom()
+                                                .build(),
+                                        new EnvVarBuilder()
+                                                .withName("WRITE_PASSWORD")
+                                                .withNewValueFrom()
+                                                .withNewSecretKeyRef()
+                                                .withName(SECRETSNAME)
+                                                .withKey("WRITE_PASSWORD")
+                                                .endSecretKeyRef()
+                                                .endValueFrom()
+                                                .build()
+                                )
+                                .endContainer()
+
+                                .endSpec()
+                                .endTemplate()
+                                .endSpec()
+                                .build();
+                        openshiftClient.apps().deployments().inNamespace("datacopier").createOrReplace(deployment);
+                        //List li =openshiftClient.images();
+                    //} catch ()
                     return Response.ok("Pyyntö lähetetty\n").build();
                 }
                 else {
@@ -118,7 +169,9 @@ public class CoreResource {
         if (service.type.equals(ALLASPUBLIC) || service.type.equals(ALLAS))
             if (null == service.protocol)
                 return 402; //missig protocol even code is payment
-        if (!source && (!(service.type.equals(IDASTAGING) || service.type.equals(ALLAS))))
+        if (!source && (!(service.type.equals(IDASTAGING)
+                || service.type.equals(ALLAS)
+                || service.type.equals(B2DROP))))
             return 418; // teapot is not a valid Destination
         return 200;
     }
