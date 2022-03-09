@@ -80,6 +80,7 @@ public class Palvelu implements Serializable {
             try (ResultSet rs = stmnt.getGeneratedKeys()) {
                 if (rs.next()) {
                     int caseid = rs.getInt(1);
+                    rs.close();
                     stmnt.close();
                     return caseid;
                 }

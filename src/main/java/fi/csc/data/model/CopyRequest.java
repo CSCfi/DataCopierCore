@@ -42,6 +42,7 @@ public class CopyRequest /*extends PanacheEntityBase*/ {
             statement.setInt(2, s);
             statement.setInt(3, d);
             int tulos = statement.executeUpdate();
+            con.commit();
             statement.close();
                         if (1 == tulos) {
                             return true;

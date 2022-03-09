@@ -8,6 +8,7 @@ import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.PodSpec;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.api.model.apps.DeploymentBuilder;
+import io.fabric8.kubernetes.api.model.apps.DeploymentStatus;
 import io.fabric8.openshift.client.OpenShiftClient;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
@@ -41,7 +42,7 @@ import static fi.csc.data.model.Palvelu.PalveluID.IDASTAGING;
 @Consumes(MediaType.APPLICATION_JSON)
 public class CoreResource {
 
-    private final static String PODNAME = "dcEngine"; //Should have numbering extra?
+    private final static String PODNAME = "dc-engine"; //Should have numbering extra?
     private final static String APP = "app"; //Does content matter?
     private final static String SECRETSNAME = "datacopiersecrets";
     private final static int OK = 200;
@@ -77,9 +78,9 @@ public class CoreResource {
                 Connection connection = defaultDataSource.getConnection();
                 if (ft.tallenna(connection)) {
                     connection.close();
-                    //try {
+                    try {
                         Deployment deployment = new DeploymentBuilder().withNewMetadata()
-                                .withName("datacopierEngine-deployment")
+                                .withName("datacopier-engine-deployment")
                                 .addToLabels(APP, PODNAME).endMetadata()
                                 .withNewSpec()
                                 .withReplicas(1)
@@ -119,9 +120,15 @@ public class CoreResource {
                                 .endTemplate()
                                 .endSpec()
                                 .build();
-                        openshiftClient.apps().deployments().inNamespace("datacopier").createOrReplace(deployment);
+                        Deployment d = openshiftClient.apps().deployments()
+                                .inNamespace("datacopier").createOrReplace(deployment);
+                        DeploymentStatus ds = d.getStatus();
+                        log.info(ds.toString());
                         //List li =openshiftClient.images();
-                    //} catch ()
+                    } catch (io.fabric8.kubernetes.client.KubernetesClientException kce) {
+                        log.error(kce.getMessage());
+                        return Response.status(202, "Suottipa onnistua tahi ei").build();
+                    }
                     return Response.ok("Pyyntö lähetetty\n").build();
                 }
                 else {

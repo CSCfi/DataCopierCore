@@ -39,9 +39,11 @@ public class Auth  /*extends PanacheEntityBase*/  implements Serializable{
             ResultSet rs = stmnt.getGeneratedKeys();
             if (rs.next()) {
                     int caseid = rs.getInt(1);
+                    rs.close();
                     stmnt.close();
                     return caseid;
                     }
+            rs.close();
             stmnt.close();
         } catch (SQLException s) {
 
