@@ -1,25 +1,18 @@
 package fi.csc.data.model;
 
-//import java.io.Serializable;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-//import java.sql.ResultSet;
 
-//import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.jboss.logging.Logger;
 
-/*import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-*/
 /**
  * https://wiki.csc.fi/SDS/DatasetCopierIDAAllasAPI
  */
 @RegisterForReflection
-public class CopyRequest /*extends PanacheEntityBase*/ {
+public class CopyRequest {
 
     private static final String INSERT = "INSERT INTO request (requester, source, destination) VALUES (?, ?, ?)";
     private static final Logger LOG = Logger.getLogger(CopyRequest.class);
@@ -42,7 +35,7 @@ public class CopyRequest /*extends PanacheEntityBase*/ {
             statement.setInt(2, s);
             statement.setInt(3, d);
             int tulos = statement.executeUpdate();
-            con.commit();
+            //con.commit(); //cause java.sql.SQLException: Attempting to commit while taking part in a transaction
             statement.close();
                         if (1 == tulos) {
                             return true;
