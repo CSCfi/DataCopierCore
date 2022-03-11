@@ -9,6 +9,8 @@ import io.fabric8.kubernetes.api.model.PodSpec;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.api.model.apps.DeploymentBuilder;
 import io.fabric8.kubernetes.api.model.apps.DeploymentStatus;
+import io.fabric8.kubernetes.client.extended.run.RunConfigBuilder;
+import io.fabric8.kubernetes.client.extended.run.RunOperations;
 import io.fabric8.openshift.client.OpenShiftClient;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
@@ -94,7 +96,7 @@ public class CoreResource {
                                 .withNewSpec()
                                 .addNewContainer()
                                 .withName(PODNAME)
-                                .withImage("datacopier/engine")
+                                .withImage("docker-registry.default.svc:5000/datacopier/engine")
                                 .withEnv(new EnvVarBuilder()
                                                 .withName("READ_PASSWORD")
                                                 .withNewValueFrom()
@@ -115,13 +117,24 @@ public class CoreResource {
                                                 .build()
                                 )
                                 .endContainer()
-
+                                //.withRestartPolicy("Never") Not supported
                                 .endSpec()
                                 .endTemplate()
                                 .endSpec()
                                 .build();
+                        /*RunOperations r = openshiftClient.run().withRunConfig(new RunConfigBuilder()
+                                .withImage("docker-registry.default.svc:5000/datacopier/engine")
+                                .withName(PODNAME)
+                                .addToLabels(APP, PODNAME)
+                                .build());*/
+
                         Deployment d = openshiftClient.apps().deployments()
                                 .inNamespace("datacopier").createOrReplace(deployment);
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                         DeploymentStatus ds = d.getStatus();
                         log.info(ds.toString());
                         //List li =openshiftClient.images();
