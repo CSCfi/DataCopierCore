@@ -3,6 +3,7 @@ package fi.csc.data.model;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
@@ -26,27 +27,38 @@ public class CopyRequest {
     public Palvelu destination;
     public int status;
 
-    public boolean tallenna(Connection con) {
+    public int tallenna(Connection con) {
         int s = source.tallenna(con);
         int d = destination.tallenna(con);
         try {
-            PreparedStatement statement = con.prepareStatement(INSERT/*, PreparedStatement.RETURN_GENERATED_KEYS*/);
+            PreparedStatement statement = con.prepareStatement(INSERT, PreparedStatement.RETURN_GENERATED_KEYS)
+                    ;
             statement.setString(1, requester);
             statement.setInt(2, s);
             statement.setInt(3, d);
             int tulos = statement.executeUpdate();
+            try (ResultSet rs = statement.getGeneratedKeys()) {
+                if (rs.next()) {
+                    int caseid = rs.getInt(1);
+                    rs.close();
+                    statement.close();
+                    return caseid;
+                }
+            } catch (SQLException sqle) {
+                sqle.printStackTrace();
+            }
             //con.commit(); //cause java.sql.SQLException: Attempting to commit while taking part in a transaction
             statement.close();
                         if (1 == tulos) {
-                            return true;
+                            return -3;
                         } else {
                             LOG.error("Database write return: "+tulos);
-                            return false;
+                            return -2;
                         }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return false;
+        return -1;
     }
 }

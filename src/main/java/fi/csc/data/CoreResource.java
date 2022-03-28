@@ -3,7 +3,9 @@ package fi.csc.data;
 import fi.csc.data.model.CopyRequest;
 import fi.csc.data.model.Palvelu;
 import io.agroal.api.AgroalDataSource;
-import io.fabric8.kubernetes.api.model.EnvVarBuilder;
+//import io.fabric8.openshift.client.OpenShiftClient;
+
+/*import io.fabric8.kubernetes.api.model.EnvVarBuilder;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.PodSpec;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
@@ -11,8 +13,9 @@ import io.fabric8.kubernetes.api.model.apps.DeploymentBuilder;
 import io.fabric8.kubernetes.api.model.apps.DeploymentStatus;
 import io.fabric8.kubernetes.client.extended.run.RunConfigBuilder;
 import io.fabric8.kubernetes.client.extended.run.RunOperations;
-import io.fabric8.openshift.client.OpenShiftClient;
+import io.fabric8.openshift.client.OpenShiftClient;*/
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.jboss.logging.Logger;
 //import org.jboss.resteasy.annotations.jaxrs.HeaderParam;
 
@@ -56,8 +59,12 @@ public class CoreResource {
     @ConfigProperty(name = "dc.apikey")
     String apikey;
 
+    /*@Inject
+    private OpenShiftClient openshiftClient;*/
+
     @Inject
-    private OpenShiftClient openshiftClient;
+    @RestClient
+    RunService runService;
 
     @Inject
     AgroalDataSource defaultDataSource;
@@ -78,9 +85,11 @@ public class CoreResource {
         if (OK == code) {
             try  {
                 Connection connection = defaultDataSource.getConnection();
-                if (ft.tallenna(connection)) {
+                int id = ft.tallenna(connection);
+                if (id > 0) {
                     connection.close();
-                    try {
+                    runService.runById(id);
+                    /*try {
                         Deployment deployment = new DeploymentBuilder().withNewMetadata()
                                 .withName("datacopier-engine-deployment")
                                 .addToLabels(APP, PODNAME).endMetadata()
@@ -122,11 +131,11 @@ public class CoreResource {
                                 .endTemplate()
                                 .endSpec()
                                 .build();
-                        /*RunOperations r = openshiftClient.run().withRunConfig(new RunConfigBuilder()
-                                .withImage("docker-registry.default.svc:5000/datacopier/engine")
-                                .withName(PODNAME)
-                                .addToLabels(APP, PODNAME)
-                                .build());*/
+                        //RunOperations r = openshiftClient.run().withRunConfig(new RunConfigBuilder()
+                          //      .withImage("docker-registry.default.svc:5000/datacopier/engine")
+                          //      .withName(PODNAME)
+                          //      .addToLabels(APP, PODNAME)
+                          //      .build());
 
                         Deployment d = openshiftClient.apps().deployments()
                                 .inNamespace("datacopier").createOrReplace(deployment);
@@ -141,7 +150,7 @@ public class CoreResource {
                     } catch (io.fabric8.kubernetes.client.KubernetesClientException kce) {
                         log.error(kce.getMessage());
                         return Response.status(202, "Suottipa onnistua tahi ei").build();
-                    }
+                    }*/
                     return Response.ok("Pyyntö lähetetty\n").build();
                 }
                 else {
