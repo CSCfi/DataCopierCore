@@ -49,6 +49,7 @@ public class CopyRequest {
             }
             //con.commit(); //cause java.sql.SQLException: Attempting to commit while taking part in a transaction
             statement.close();
+            con.commit();
                         if (1 == tulos) {
                             return -3;
                         } else {
