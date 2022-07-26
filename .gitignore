@@ -14,7 +14,8 @@ buildNumber.properties
 .classpath
 .settings/
 bin/
-
+# Compiled class file
+*.class
 # IntelliJ
 .idea
 *.ipr

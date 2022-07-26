@@ -7,6 +7,16 @@
       <option name="url" value="https://repo.maven.apache.org/maven2" />
     </remote-repository>
     <remote-repository>
+      <option name="id" value="snapshots" />
+      <option name="name" value="pidms-oaipmh-quarkus-maven" />
+      <option name="url" value="https://artifactory.ci.csc.fi:443/artifactory/pidms-oaipmh-quarkus-maven" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="central" />
+      <option name="name" value="pidms-oaipmh-quarkus-maven" />
+      <option name="url" value="https://artifactory.ci.csc.fi:443/artifactory/pidms-oaipmh-quarkus-maven" />
+    </remote-repository>
+    <remote-repository>
       <option name="id" value="central" />
       <option name="name" value="Maven Central repository" />
       <option name="url" value="https://repo1.maven.org/maven2" />
