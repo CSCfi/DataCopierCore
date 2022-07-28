@@ -17,7 +17,7 @@ bin/
 # Compiled class file
 *.class
 # IntelliJ
-.idea
+.idea/
 *.ipr
 *.iml
 *.iws
