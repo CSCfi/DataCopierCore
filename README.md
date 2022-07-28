@@ -52,19 +52,17 @@ content of the ekatask.json:
 
 You can create a native executable using: 
 ```shell script
-./mvnw package -Pnative
+./mvn package -Pnative
 ```
+
+and the docker file is in src/main/docker directory
+and the native case use the native one which contains further build instructions
+
 ## Provided Code
 
-### YAML Config
+### Config
 
-Configure your application with YAML
-
-[Related guide section...](https://quarkus.io/guides/config-reference#configurat
-ion-examples)
-
-The Quarkus application configuration is located in `src/main/resources/applicat
-ion.yml`.
+is in src/main/resources directory
 
 ## Author
 
