@@ -70,11 +70,8 @@ public class CoreResource {
                 if (id > 0) {
                     connection.commit();
                     connection.close();
-                    String tulos = runService.runById(id);
-                    if (tulos.startsWith("Pyyntö lähetetty"))
-                        return Response.ok(id+"\n").build();
-                    else
-                        return Response.ok(id+"\n"+tulos).build();
+                    runService.runById(id);
+                    return Response.ok(id+"\n").build();
                 }
                 else {
                     connection.close();
