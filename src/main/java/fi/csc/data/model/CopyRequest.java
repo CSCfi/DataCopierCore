@@ -10,12 +10,12 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.jboss.logging.Logger;
 
 /**
- * https://wiki.csc.fi/SDS/DatasetCopierIDAAllasAPI
+ * <a href="https://wiki.csc.fi/SDS/DatasetCopierIDAAllasAPI">Sorry, internal specification</a>
  */
 @RegisterForReflection
 public class CopyRequest {
 
-    private static final String INSERT = "INSERT INTO request (requester, source, destination) VALUES (?, ?, ?)";
+    private static final String INSERT = "INSERT INTO request (requester, email, source, destination) VALUES (?, ?, ?, ?)";
     private static final Logger LOG = Logger.getLogger(CopyRequest.class);
     private static final long serialVersionUID = 56630571L;
 
@@ -23,10 +23,16 @@ public class CopyRequest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public int copyid;*/
     public String requester;
+    public boolean email;
     public Palvelu source;
     public Palvelu destination;
     public int status;
 
+    /**
+     * Tämän olion tietokantaan tallennus
+     * @param con Connection SQL one (from injected pool)
+     * @return int caseid which is database index
+     */
     public int tallenna(Connection con) {
         int s = source.tallenna(con);
         int d = destination.tallenna(con);
@@ -34,8 +40,9 @@ public class CopyRequest {
             PreparedStatement statement = con.prepareStatement(INSERT, PreparedStatement.RETURN_GENERATED_KEYS)
                     ;
             statement.setString(1, requester);
-            statement.setInt(2, s);
-            statement.setInt(3, d);
+            statement.setBoolean(2, email);
+            statement.setInt(3, s);
+            statement.setInt(4, d);
             int tulos = statement.executeUpdate();
             try (ResultSet rs = statement.getGeneratedKeys()) {
                 if (rs.next()) {
