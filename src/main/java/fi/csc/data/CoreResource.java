@@ -42,7 +42,8 @@ public class CoreResource {
 
     @ConfigProperty(name = "dc.apikey")
     String apikey;
-
+    @ConfigProperty(name = "ldap.key")
+    String ldapkey;
     @Inject
     @RestClient
     RunService runService;
@@ -70,6 +71,8 @@ public class CoreResource {
                 if (id > 0) {
                     connection.commit();
                     connection.close();
+                    LDAP ldap = new LDAP(ldapkey);
+                    String email = ldap.emailquery(ft.requester);
                     runService.runById(id);
                     return Response.ok(id+"\n").build();
                 }
