@@ -2,14 +2,16 @@ package fi.csc.data;
 
 import fi.csc.data.model.CopyRequest;
 import fi.csc.data.model.Palvelu;
+import fi.csc.data.services.CopyRequestService;
+import fi.csc.data.services.RunService;
 import io.agroal.api.AgroalDataSource;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.jboss.logging.Logger;
-
+import org.jboss.resteasy.annotations.jaxrs.PathParam;
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -29,7 +31,7 @@ import static fi.csc.data.model.Palvelu.PalveluID.FAIRDATAOPEN;
 import static fi.csc.data.model.Palvelu.PalveluID.IDASTAGING;
 
 
-@Path("/v1/copy")
+@Path("/v1/")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class CoreResource {
@@ -42,12 +44,11 @@ public class CoreResource {
 
     @ConfigProperty(name = "dc.apikey")
     String apikey;
-    @ConfigProperty(name = "ldap.key")
-    String ldapkey;
     @Inject
     @RestClient
     RunService runService;
-
+    @Inject
+    CopyRequestService crs;
     @Inject
     AgroalDataSource defaultDataSource;
 
@@ -56,6 +57,7 @@ public class CoreResource {
 
     //@Transactional
     @POST
+    @Path("copy")
     public Response copy( CopyRequest ft, @HeaderParam("Apikey") String apikeytocheck) {
         if (!apikey.equals(apikeytocheck)) {
             log.error("Invalid Apikey: "+ apikeytocheck);
@@ -71,8 +73,6 @@ public class CoreResource {
                 if (id > 0) {
                     connection.commit();
                     connection.close();
-                    LDAP ldap = new LDAP(ldapkey);
-                    String email = ldap.emailquery(ft.requester);
                     runService.runById(id);
                     return Response.ok(id+"\n").build();
                 }
@@ -88,8 +88,20 @@ public class CoreResource {
         } else
             return Response.status(code).build();
     }
-
-
+    @Path("status/{id}")
+    @GET
+    public Response status(@PathParam("id") Integer id, @HeaderParam("Apikey") String apikeytocheck) {
+        if (!apikey.equals(apikeytocheck)) {
+            log.error("Invalid Apikey: "+ apikeytocheck);
+            return ACCESSDENIED;
+        }
+        CopyRequest cr = crs.getById(id);
+        if (null == cr) {
+           return Response.status(404, "Can't find any information by id: "+id).build();
+        } else {
+            return Response.ok(cr).build();
+        }
+    }
     private int validate(CopyRequest ft) {
         if (null == ft.requester)
             return 403;

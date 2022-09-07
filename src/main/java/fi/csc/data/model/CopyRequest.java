@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.jboss.logging.Logger;
 
@@ -13,20 +14,23 @@ import org.jboss.logging.Logger;
  * <a href="https://wiki.csc.fi/SDS/DatasetCopierIDAAllasAPI">Sorry, internal specification</a>
  */
 @RegisterForReflection
-public class CopyRequest {
+public class CopyRequest extends PanacheEntity {
 
     private static final String INSERT = "INSERT INTO request (requester, email, source, destination) VALUES (?, ?, ?, ?)";
     private static final Logger LOG = Logger.getLogger(CopyRequest.class);
     private static final long serialVersionUID = 56630571L;
 
     /*@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public int copyid;*/
+    @GeneratedValue(strategy = GenerationType.IDENTITY)*/
+    public int copyid;
     public String requester;
     public boolean email;
     public Palvelu source;
     public Palvelu destination;
     public int status;
+    public int MB;
+    public int nofiles;
+    public double wallclock;
 
     /**
      * Tämän olion tietokantaan tallennus
@@ -46,10 +50,10 @@ public class CopyRequest {
             int tulos = statement.executeUpdate();
             try (ResultSet rs = statement.getGeneratedKeys()) {
                 if (rs.next()) {
-                    int caseid = rs.getInt(1);
+                    this.copyid = rs.getInt(1);
                     rs.close();
                     statement.close();
-                    return caseid;
+                    return copyid;
                 }
             } catch (SQLException sqle) {
                 sqle.printStackTrace();

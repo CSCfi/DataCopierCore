@@ -1,5 +1,6 @@
-package fi.csc.data;
+package fi.csc.data.services;
 
+import fi.csc.data.RequestHeaderFactory;
 import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 import org.jboss.resteasy.annotations.jaxrs.PathParam;
