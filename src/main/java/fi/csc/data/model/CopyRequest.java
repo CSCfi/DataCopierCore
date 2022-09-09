@@ -10,10 +10,13 @@ import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.jboss.logging.Logger;
 
+import javax.persistence.Entity;
+
 /**
  * <a href="https://wiki.csc.fi/SDS/DatasetCopierIDAAllasAPI">Sorry, internal specification</a>
  */
 @RegisterForReflection
+@Entity
 public class CopyRequest extends PanacheEntity {
 
     private static final String INSERT = "INSERT INTO request (requester, email, source, destination) VALUES (?, ?, ?, ?)";
