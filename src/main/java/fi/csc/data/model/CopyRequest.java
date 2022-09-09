@@ -6,25 +6,28 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import io.quarkus.hibernate.orm.panache.PanacheEntity;
+import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.jboss.logging.Logger;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 /**
  * <a href="https://wiki.csc.fi/SDS/DatasetCopierIDAAllasAPI">Sorry, internal specification</a>
  */
 @RegisterForReflection
 @Entity
-public class CopyRequest extends PanacheEntity {
+public class CopyRequest extends PanacheEntityBase {
 
     private static final String INSERT = "INSERT INTO request (requester, email, source, destination) VALUES (?, ?, ?, ?)";
     private static final Logger LOG = Logger.getLogger(CopyRequest.class);
     private static final long serialVersionUID = 56630571L;
 
-    /*@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)*/
+    @Id
+    /*@GeneratedValue(strategy = GenerationType.IDENTITY)*/
     public int copyid;
     public String requester;
     public boolean email;
