@@ -51,6 +51,8 @@ public class CoreResource {
     CopyRequestService crs;
     @Inject
     AgroalDataSource defaultDataSource;
+     @Inject
+     AgroalDataSource writeDataSource;
 
     @Inject
     Logger log;
@@ -68,7 +70,7 @@ public class CoreResource {
         int code = validate(ft);
         if (OK == code) {
             try  {
-                Connection connection = defaultDataSource.getConnection();
+                Connection connection = writeDataSource.getConnection();
                 int id = ft.tallenna(connection);
                 if (id > 0) {
                     connection.commit();
