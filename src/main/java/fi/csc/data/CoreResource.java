@@ -97,11 +97,16 @@ public class CoreResource {
             log.error("Invalid Apikey: "+ apikeytocheck);
             return ACCESSDENIED;
         }
-        CopyRequest cr = crs.getById(id);
-        if (null == cr) {
-           return Response.status(404, "Can't find any information by id: "+id).build();
-        } else {
-            return Response.ok(cr).build();
+        try {
+            CopyRequest cr = crs.getById(id, defaultDataSource.getConnection());
+            if (null == cr) {
+                return Response.status(404, "Can't find any information by id: " + id).build();
+            } else {
+                return Response.ok(cr).build();
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return Response.status(500, "Tietokantayhteysongelma\n").build();
         }
     }
     private int validate(CopyRequest ft) {

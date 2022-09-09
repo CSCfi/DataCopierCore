@@ -10,21 +10,19 @@ import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.jboss.logging.Logger;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Table;
+
 
 /**
  * <a href="https://wiki.csc.fi/SDS/DatasetCopierIDAAllasAPI">Sorry, internal specification</a>
  */
 @RegisterForReflection
-@Entity
-@Table(name = "request")
-public class CopyRequest extends PanacheEntityBase {
+/*@Entity
+@Table(name = "request")*/
+public class CopyRequest /* extends PanacheEntityBase */ {
 
     private static final String INSERT = "INSERT INTO request (requester, email, source, destination) VALUES (?, ?, ?, ?)";
+    private static final String SELECT = "SELECT copyid, email, status, MB, nofiles, wallclock FROM request WHERE copyid=?";
     private static final Logger LOG = Logger.getLogger(CopyRequest.class);
     private static final long serialVersionUID = 56630571L;
 
@@ -39,6 +37,31 @@ public class CopyRequest extends PanacheEntityBase {
     public int MB;
     public int nofiles;
     public double wallclock;
+
+    public CopyRequest(int id, boolean email, int status, int MB, int nofiles, double wallclock) {
+        this.copyid = id;
+        this.email = email;
+        this.status = status;
+        this.MB = MB;
+        this.nofiles = nofiles;
+        this.wallclock = wallclock;
+        this.requester = "censored";
+    }
+    public static CopyRequest findById(int id, Connection con) {
+       try {
+            PreparedStatement statement = con.prepareStatement(SELECT);
+            statement.setInt(1, id);
+            ResultSet rs = statement.executeQuery();
+            if (rs.next()) {
+                return new CopyRequest(rs.getInt(1), rs.getBoolean(2),
+                        rs.getInt(3), rs.getInt(4), rs.getInt(5),
+                rs.getDouble(6));
+            }
+           } catch (SQLException e) {
+            e.printStackTrace();
+        }
+       return null;
+    }
 
     /**
      * Tämän olion tietokantaan tallennus
