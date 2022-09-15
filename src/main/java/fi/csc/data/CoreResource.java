@@ -5,6 +5,7 @@ import fi.csc.data.model.Palvelu;
 import fi.csc.data.services.CopyRequestService;
 import fi.csc.data.services.RunService;
 import io.agroal.api.AgroalDataSource;
+import io.quarkus.agroal.DataSource;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.jboss.logging.Logger;
@@ -52,6 +53,7 @@ public class CoreResource {
     @Inject
     AgroalDataSource defaultDataSource;
      @Inject
+     @DataSource("write")
      AgroalDataSource writeDataSource;
 
     @Inject
@@ -77,8 +79,7 @@ public class CoreResource {
                     connection.close();
                     runService.runById(id);
                     return Response.ok(id+"\n").build();
-                }
-                else {
+                } else {
                     connection.close();
                     return Response.status(500, "Pyynnön tallennus epäonnistui\n").build();
                 }
