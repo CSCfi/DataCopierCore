@@ -38,6 +38,17 @@ public class CopyRequest /* extends PanacheEntityBase */ {
     public int nofiles;
     public double wallclock;
 
+
+    public CopyRequest() {
+        // Tarkoituksella tyhjä (perustuu sivuun https://copyfuture.com/blogs-details/202204051032292317
+        // jonka mukaan tämä yllättäen on pakollinen, kun yhden lisäsi.
+    }
+    public CopyRequest(String requester, boolean email, Palvelu source, Palvelu destination) {
+        this.requester = requester;
+        this.email = email;
+        this.source = source;
+        this.destination = destination;
+    }
     public CopyRequest(int id, boolean email, int status, int MB, int nofiles, double wallclock) {
         this.copyid = id;
         this.email = email;
