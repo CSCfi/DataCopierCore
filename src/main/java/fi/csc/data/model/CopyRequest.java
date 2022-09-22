@@ -21,7 +21,6 @@ import javax.persistence.Id;
 @Table(name = "request")*/
 public class CopyRequest /* extends PanacheEntityBase */ {
 
-    private static final String INSERT = "INSERT INTO request (requester, email, source, destination) VALUES (?, ?, ?, ?)";
     private static final String SELECT = "SELECT copyid, email, status, MB, nofiles, wallclock FROM request WHERE copyid=?";
     private static final Logger LOG = Logger.getLogger(CopyRequest.class);
     private static final long serialVersionUID = 56630571L;
@@ -38,17 +37,6 @@ public class CopyRequest /* extends PanacheEntityBase */ {
     public int nofiles;
     public double wallclock;
 
-
-    public CopyRequest() {
-        // Tarkoituksella tyhjä (perustuu sivuun https://copyfuture.com/blogs-details/202204051032292317
-        // jonka mukaan tämä yllättäen on pakollinen, kun yhden lisäsi.
-    }
-    public CopyRequest(String requester, boolean email, Palvelu source, Palvelu destination) {
-        this.requester = requester;
-        this.email = email;
-        this.source = source;
-        this.destination = destination;
-    }
     public CopyRequest(int id, boolean email, int status, int MB, int nofiles, double wallclock) {
         this.copyid = id;
         this.email = email;
@@ -74,45 +62,4 @@ public class CopyRequest /* extends PanacheEntityBase */ {
        return null;
     }
 
-    /**
-     * Tämän olion tietokantaan tallennus
-     * @param con Connection SQL one (from injected pool)
-     * @return int caseid which is database index
-     */
-    public int tallenna(Connection con) {
-        int s = source.tallenna(con);
-        int d = destination.tallenna(con);
-        try {
-            PreparedStatement statement = con.prepareStatement(INSERT, PreparedStatement.RETURN_GENERATED_KEYS)
-                    ;
-            statement.setString(1, requester);
-            statement.setBoolean(2, email);
-            statement.setInt(3, s);
-            statement.setInt(4, d);
-            int tulos = statement.executeUpdate();
-            try (ResultSet rs = statement.getGeneratedKeys()) {
-                if (rs.next()) {
-                    this.copyid = rs.getInt(1);
-                    rs.close();
-                    statement.close();
-                    return copyid;
-                }
-            } catch (SQLException sqle) {
-                sqle.printStackTrace();
-            }
-            //con.commit(); //cause java.sql.SQLException: Attempting to commit while taking part in a transaction
-            statement.close();
-            con.commit();
-                        if (1 == tulos) {
-                            return -3;
-                        } else {
-                            LOG.error("Database write return: "+tulos);
-                            return -2;
-                        }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return -1;
-    }
 }

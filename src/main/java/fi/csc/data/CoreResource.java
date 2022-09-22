@@ -1,6 +1,7 @@
 package fi.csc.data;
 
 import fi.csc.data.model.CopyRequest;
+import fi.csc.data.model.Kopiointipyyntö;
 import fi.csc.data.model.Palvelu;
 import fi.csc.data.services.CopyRequestService;
 import fi.csc.data.services.RunService;
@@ -62,7 +63,7 @@ public class CoreResource {
     //@Transactional
     @POST
     @Path("copy")
-    public Response copy( CopyRequest ft, @HeaderParam("Apikey") String apikeytocheck) {
+    public Response copy(Kopiointipyyntö ft, @HeaderParam("Apikey") String apikeytocheck) {
         if (!apikey.equals(apikeytocheck)) {
             log.error("Invalid Apikey: "+ apikeytocheck);
             return ACCESSDENIED;
@@ -110,7 +111,7 @@ public class CoreResource {
             return Response.status(500, "Tietokantayhteysongelma\n").build();
         }
     }
-    private int validate(CopyRequest ft) {
+    private int validate(Kopiointipyyntö ft) {
         if (null == ft.requester)
             return 403;
         if (null == ft.source)
