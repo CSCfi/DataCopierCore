@@ -10,7 +10,7 @@ import javax.ws.rs.Path;
 
 @Path("/run")
 @RegisterRestClient(configKey="engine-api")
-@RegisterClientHeaders(RequestHeaderFactory.class)
+//@RegisterClientHeaders(RequestHeaderFactory.class)
 public interface RunService {
     @GET
     @Path("/{id}")
