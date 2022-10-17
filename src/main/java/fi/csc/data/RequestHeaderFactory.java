@@ -6,7 +6,6 @@ import org.eclipse.microprofile.rest.client.ext.ClientHeadersFactory;
 import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
-import java.util.UUID;
 
 @ApplicationScoped
 public class RequestHeaderFactory  implements ClientHeadersFactory  {
