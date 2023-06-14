@@ -10,7 +10,7 @@ import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.jboss.logging.Logger;
 
-import javax.persistence.Id;
+import jakarta.persistence.Id;
 
 
 /**

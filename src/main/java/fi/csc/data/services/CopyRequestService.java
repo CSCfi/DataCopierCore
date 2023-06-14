@@ -2,7 +2,7 @@ package fi.csc.data.services;
 
 import fi.csc.data.model.CopyRequest;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 import java.sql.Connection;
 
 @ApplicationScoped
